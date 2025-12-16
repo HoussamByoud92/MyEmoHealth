@@ -23,21 +23,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background Gradient
+          // Background - Pure White (as requested)
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF6B8EFF), // Soft Blue
-                  Color(0xFFFF8FB1), // Soft Pink
-                  Color(0xFFB39DDB), // Light Purple
-                ],
-              ),
-            ),
+            color: Colors.white,
           ),
           
           SafeArea(
@@ -45,23 +36,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
               future: _dashboardFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator(color: Colors.white));
+                  return const Center(child: CircularProgressIndicator(color: AppColors.primary));
                 }
 
                 if (snapshot.hasError) {
                   return Center(
-                    child: GlassCard(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                           const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
-                           const SizedBox(height: 16),
-                           Text('Error: ${snapshot.error}', textAlign: TextAlign.center),
-                           TextButton(
-                             onPressed: () => setState(() => _dashboardFuture = ApiService.getDashboardData()),
-                             child: const Text('Retry'),
-                           )
-                        ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: GlassCard(
+                        // Create a Blue Error Card
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.danger.withOpacity(0.9),
+                            Colors.redAccent.withOpacity(0.7),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                             const Icon(Icons.error_outline, size: 48, color: Colors.white),
+                             const SizedBox(height: 16),
+                             Text('Error: ${snapshot.error}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white)),
+                             TextButton(
+                               onPressed: () => setState(() => _dashboardFuture = ApiService.getDashboardData()),
+                               child: const Text('Retry', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                             )
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -88,13 +89,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(
                                 'Good Morning,',
                                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: AppColors.primaryDark.withOpacity(0.8),
                                 ),
                               ),
                               Text(
                                 userName,
                                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                                  color: Colors.white,
+                                  color: AppColors.primaryDark,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -103,7 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                              border: Border.all(color: AppColors.primary, width: 2),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.1),
@@ -121,9 +122,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       
                       const SizedBox(height: 32),
                       
-                      // Main Stat Card
+                      // Main Stat Card - Blue Glass
                       GlassCard(
-                        opacity: 0.2, 
+                        opacity: 0.9, 
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primary.withOpacity(0.85),
+                            AppColors.accent.withOpacity(0.80),
+                          ],
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -132,12 +141,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               children: [
                                 const Text(
                                   'Current Mood',
-                                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                                  style: TextStyle(color: Colors.white, fontSize: 16),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withOpacity(0.2), // Lighter pill inside blue card
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Row(
@@ -171,7 +180,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(height: 24),
                       Text(
                         'Quick Actions',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.primaryDark,
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
                       const SizedBox(height: 16),
                       
@@ -185,11 +197,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   MaterialPageRoute(builder: (context) => const AiCompanionScreen()),
                                 );
                               },
+                              // Lighter Blue Glass Button
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.primary.withOpacity(0.15),
+                                  AppColors.accent.withOpacity(0.1),
+                                ],
+                              ),
                               child: const Column(
                                 children: [
-                                  Icon(Icons.mic, color: Colors.white, size: 32),
+                                  Icon(Icons.mic, color: AppColors.primaryDark, size: 32),
                                   SizedBox(height: 8),
-                                  Text('Talk to AI', style: TextStyle(color: Colors.white)),
+                                  Text('Talk to AI', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),
@@ -198,14 +217,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Expanded(
                             child: GlassCard(
                               onTap: () {
-                                // Navigate to Test Tab (needs controller access or just show message)
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Go to Tests tab')));
                               },
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.primary.withOpacity(0.15),
+                                  AppColors.accent.withOpacity(0.1),
+                                ],
+                              ),
                               child: const Column(
                                 children: [
-                                  Icon(Icons.assignment, color: Colors.white, size: 32),
+                                  Icon(Icons.assignment, color: AppColors.primaryDark, size: 32),
                                   SizedBox(height: 8),
-                                  Text('Start Test', style: TextStyle(color: Colors.white)),
+                                  Text('Start Test', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),
@@ -216,23 +240,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(height: 24),
                       Text(
                         'Recent Activity',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.primaryDark,
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
                       const SizedBox(height: 16),
                       GlassCard(
+                        // Very Light Blue Glass for List Item
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withOpacity(0.1),
+                            AppColors.accent.withOpacity(0.05),
+                          ],
+                        ),
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: AppColors.primary.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.check, color: Colors.white),
+                            child: const Icon(Icons.check, color: AppColors.primaryDark),
                           ),
-                          title: const Text('Daily Check-in', style: TextStyle(color: Colors.white)),
-                          subtitle: const Text('Completed yesterday', style: TextStyle(color: Colors.white70)),
-                          trailing: const Text('+8.5', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          title: const Text('Daily Check-in', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold)),
+                          subtitle: const Text('Completed yesterday', style: TextStyle(color: AppColors.textLight)),
+                          trailing: const Text('+8.5', style: TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold)),
                         ),
                       ),
                     ],

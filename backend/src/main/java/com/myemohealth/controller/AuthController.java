@@ -78,6 +78,37 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("Logged out successfully"));
     }
 
+    /**
+     * POST /api/auth/create-test-doctor
+     * Create a test doctor with known password (for testing only)
+     */
+    @PostMapping("/create-test-doctor")
+    public ResponseEntity<?> createTestDoctor() {
+        try {
+            RegisterRequest request = new RegisterRequest();
+            request.setEmail("test@doctor.com");
+            request.setPassword("test123");
+            request.setFirstName("Test");
+            request.setLastName("Doctor");
+            request.setRole("DOCTOR");
+
+            AuthResponse response = authService.register(request);
+            return ResponseEntity.ok(java.util.Map.of(
+                    "message", "Test doctor created successfully!",
+                    "email", "test@doctor.com",
+                    "password", "test123",
+                    "userId", response.getUserId()));
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("already registered")) {
+                return ResponseEntity.ok(java.util.Map.of(
+                        "message", "Test doctor already exists",
+                        "email", "test@doctor.com",
+                        "password", "test123"));
+            }
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
     // Helper DTOs
     @Data
     public static class RefreshTokenRequest {

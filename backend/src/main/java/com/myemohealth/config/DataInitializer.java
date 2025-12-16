@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -16,9 +17,11 @@ import java.util.Map;
 
 /**
  * Database initializer to seed initial data
+ * DISABLED: Using SQL seed scripts instead (seed-data.sql)
  */
-@Component
+// @Component
 @RequiredArgsConstructor
+@Transactional
 public class DataInitializer implements CommandLineRunner {
 
         private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);

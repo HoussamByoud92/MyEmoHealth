@@ -9,6 +9,7 @@ import 'features/chat/doctor_list_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'core/theme/app_colors.dart';
 import 'package:flutter/cupertino.dart';
+import 'core/services/theme_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,12 +23,19 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => ThemeService()),
       ],
-      child: MaterialApp(
-        title: 'MyEmoHealth',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const AuthWrapper(),
+      child: Consumer<ThemeService>(
+        builder: (context, themeService, child) {
+          return MaterialApp(
+            title: 'MyEmoHealth',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeService.themeMode,
+            home: const AuthWrapper(),
+          );
+        },
       ),
     );
   }

@@ -42,8 +42,8 @@ public class AuthService {
                         throw new RuntimeException("Account is disabled");
                 }
 
-                // Verify password
-                if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+                // Verify password (plain text comparison)
+                if (!request.getPassword().equals(user.getPasswordHash())) {
                         throw new RuntimeException("Invalid email or password");
                 }
 
@@ -99,7 +99,7 @@ public class AuthService {
                 // Create user
                 User user = User.builder()
                                 .email(request.getEmail())
-                                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                                .passwordHash(request.getPassword()) // Store plain text password
                                 .firstName(request.getFirstName())
                                 .lastName(request.getLastName())
                                 .role(role)

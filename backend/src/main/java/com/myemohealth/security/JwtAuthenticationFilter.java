@@ -41,29 +41,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
-
-                // Validate token
                 if (jwtUtil.validateToken(token)) {
-                    // Extract user information
-                    String email = jwtUtil.extractEmail(token);
-                    Long userId = jwtUtil.extractUserId(token);
-                    String role = jwtUtil.extractRole(token);
-
-                    // Create custom principal with user information
-                    UserPrincipal userPrincipal = new UserPrincipal(userId, email, role);
-
-                    // Create authentication object
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userPrincipal,
-                            null,
-                            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
-
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    // Set authentication in SecurityContext
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                    log.debug("Authenticated user: {} (ID: {}) with role: {}", email, userId, role);
+                    setAuthenticationContext(token, request);
+                }
+            } else {
+                // Try from query parameter (for WebSockets)
+                String token = request.getParameter("token");
+                if (token != null && jwtUtil.validateToken(token)) {
+                    setAuthenticationContext(token, request);
                 }
             }
         } catch (Exception e) {
@@ -71,5 +56,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void setAuthenticationContext(String token, HttpServletRequest request) {
+        // Extract user information
+        String email = jwtUtil.extractEmail(token);
+        Long userId = jwtUtil.extractUserId(token);
+        String role = jwtUtil.extractRole(token);
+
+        // Create custom principal with user information
+        UserPrincipal userPrincipal = new UserPrincipal(userId, email, role);
+
+        // Create authentication object
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userPrincipal,
+                null,
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
+
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        // Set authentication in SecurityContext
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        log.debug("Authenticated user: {} (ID: {}) with role: {}", email, userId, role);
     }
 }

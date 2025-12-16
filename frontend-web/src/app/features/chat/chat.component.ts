@@ -115,21 +115,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       type: 'TEXT'
     };
 
-    // Send via WebSocket
-    this.webSocketService.publish({
-      destination: '/app/chat',
-      body: JSON.stringify(msg)
-    } as any);
-
-    // Optimistically update UI
-    const displayedMsg: ChatMessage = {
-      ...msg,
-      timestamp: new Date().toISOString()
-    };
-    this.messages.push(displayedMsg);
+    // Send via REST API instead of WebSocket
+    console.log('DEBUG PAYLOAD:', JSON.stringify(msg));
+    this.chatService.sendMessage(msg).subscribe({
+      next: (savedMsg) => {
+        // Message saved successfully, add to UI
+        this.messages.push(savedMsg);
+        this.scrollToBottom();
+      },
+      error: (err) => {
+        console.error('Failed to send message:', err);
+        // Optionally show error to user
+      }
+    });
 
     this.newMessage = '';
-    this.scrollToBottom();
   }
 
   isSentByMe(msg: ChatMessage): boolean {

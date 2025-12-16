@@ -12,7 +12,7 @@ export class WebSocketService extends RxStomp {
 
     public connect(token: string) {
         this.configure({
-            brokerURL: 'ws://localhost:8082/ws',
+            brokerURL: `ws://localhost:8082/ws?token=${token}`,
             connectHeaders: {
                 Authorization: `Bearer ${token}`
             },

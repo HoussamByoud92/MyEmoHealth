@@ -10,15 +10,17 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - ./database/seed-data.sql:/docker-entrypoint-initdb.d/02-seed.sql
+      - ./database/init-db.sql:/docker-entrypoint-initdb.d/01-init-db.sql
+      - ./database/seed-data.sql:/docker-entrypoint-initdb.d/02-seed-data.sql
+      - ./database/qcm-questions-seed.sql:/docker-entrypoint-initdb.d/04-qcm-questions.sql
+      - ./database/additional-qcms-seed.sql:/docker-entrypoint-initdb.d/05-additional-qcms.sql
     networks:
       - myemohealth-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,8 +39,8 @@ services:
       DB_PASSWORD: postgres
       JWT_SECRET: MyEmoHealth_Super_Secret_Key_Change_In_Production_2024!
     ports:
-      - "8080:8080"
-      - "9990:9990"  # WildFly admin console
+      - "8082:8082"
+      - "9990:9990" # WildFly admin console
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,7 +52,7 @@ services:
   # Angular Web Admin (nginx)
   web-admin:
     build:
-      context: ./web-admin
+      context: ./frontend-web
       dockerfile: Dockerfile
     container_name: myemohealth-web
     ports:
@@ -61,7 +63,6 @@ services:
       - myemohealth-network
     environment:
       API_URL: http://localhost:8080/api
-
   # Optional: Voice Analysis Service (placeholder)
   # voice-analysis:
   #   image: your-voice-analysis-service:latest

@@ -3,6 +3,7 @@ package com.myemohealth.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Base user entity for all system users (patients, doctors, admins)
@@ -22,6 +23,7 @@ public class User {
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
+    @JsonIgnore
     private String passwordHash;
 
     @Column(name = "first_name", length = 100)
@@ -51,9 +53,11 @@ public class User {
 
     // Relationships
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private PatientProfile patientProfile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private DoctorProfile doctorProfile;
 
     public User() {

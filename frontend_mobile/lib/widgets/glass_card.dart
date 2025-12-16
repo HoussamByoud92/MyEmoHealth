@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 
+
 class GlassCard extends StatelessWidget {
   final Widget child;
   final double? width;
@@ -8,6 +9,8 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry margin;
   final VoidCallback? onTap;
+  final Gradient? gradient;
+  final double opacity;
 
   const GlassCard({
     Key? key,
@@ -17,6 +20,8 @@ class GlassCard extends StatelessWidget {
     this.padding = const EdgeInsets.all(20),
     this.margin = const EdgeInsets.all(0),
     this.onTap,
+    this.gradient,
+    this.opacity = 0.7,
   }) : super(key: key);
 
   @override
@@ -33,7 +38,8 @@ class GlassCard extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.7),
+              color: gradient == null ? AppColors.white.withOpacity(opacity) : null,
+              gradient: gradient,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 color: Colors.white.withOpacity(0.5),

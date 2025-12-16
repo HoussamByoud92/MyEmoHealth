@@ -7,7 +7,6 @@ import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 
@@ -18,10 +17,8 @@ public class VoiceController {
 
     private final com.myemohealth.service.OpenAIService openAIService;
     private final com.myemohealth.repository.VoiceSessionRepository voiceSessionRepository;
+    private final com.myemohealth.service.SimulatedAiService simulatedAiService;
 
-    /**
-     * Get conversation history for a patient
-     */
     @GetMapping("/conversations/{patientId}")
     public ResponseEntity<List<VoiceSession>> getConversationHistory(@PathVariable Long patientId) {
         List<VoiceSession> sessions = voiceSessionRepository.findByPatientIdOrderByTimestampDesc(patientId);
@@ -34,14 +31,8 @@ public class VoiceController {
             @RequestParam("patientId") Long patientId) {
 
         try {
-            // 1. Transcribe
             String transcript = openAIService.transcribe(audioFile);
             return processAnalysis(patientId, transcript);
-
-        } catch (HttpClientErrorException.TooManyRequests e) {
-            // OpenAI quota exceeded
-            return createErrorSession(patientId,
-                    "OpenAI API quota exceeded. Please try again later or contact support.");
         } catch (Exception e) {
             e.printStackTrace();
             return createErrorSession(patientId, "Failed to process audio: " + e.getMessage());
@@ -52,9 +43,6 @@ public class VoiceController {
     public ResponseEntity<VoiceSession> analyzeText(@RequestBody VoiceAnalysisRequest request) {
         try {
             return processAnalysis(request.getPatientId(), request.getTranscript());
-        } catch (HttpClientErrorException.TooManyRequests e) {
-            return createErrorSession(request.getPatientId(),
-                    "OpenAI API quota exceeded. Please try again later or contact support.");
         } catch (Exception e) {
             e.printStackTrace();
             return createErrorSession(request.getPatientId(), "Failed to process request: " + e.getMessage());
@@ -62,43 +50,41 @@ public class VoiceController {
     }
 
     private ResponseEntity<VoiceSession> processAnalysis(Long patientId, String transcript) {
+        String aiResponse;
+
         try {
-            // 2. Chat/Analyze
-            String aiResponse = openAIService.chat(transcript);
+            // 1. Analyze with OpenAI
+            aiResponse = openAIService.chat(transcript);
 
-            // Check if AI response contains error
+            // Validation
             if (aiResponse.startsWith("AI request failed:")) {
-                return createErrorSession(patientId,
-                        "I'm currently experiencing technical difficulties. Please try again later.");
+                throw new RuntimeException(aiResponse);
             }
-
-            // 3. Detect Sentiment (Simple heuristic or ask AI)
-            String sentiment = "NEUTRAL";
-            String lower = transcript.toLowerCase();
-            if (lower.contains("sad") || lower.contains("bad") || lower.contains("anxious")
-                    || lower.contains("depressed"))
-                sentiment = "DEPRESSIVE";
-            else if (lower.contains("happy") || lower.contains("good") || lower.contains("great"))
-                sentiment = "POSITIVE";
-
-            // 4. Save
-            VoiceSession session = VoiceSession.builder()
-                    .patientId(patientId)
-                    .userTranscript(transcript)
-                    .aiResponse(aiResponse)
-                    .sentimentDetected(sentiment)
-                    .riskScore(sentiment.equals("DEPRESSIVE") ? 60 : 10)
-                    .timestamp(java.time.LocalDateTime.now())
-                    .build();
-
-            return ResponseEntity.ok(voiceSessionRepository.save(session));
-        } catch (HttpClientErrorException.TooManyRequests e) {
-            throw e; // Re-throw to be caught by caller
         } catch (Exception e) {
-            e.printStackTrace();
-            return createErrorSession(patientId,
-                    "I encountered an error while processing your message. Please try again.");
+            System.out.println("OpenAI Failed: " + e.getMessage() + ". PROCEEDING WITH FALLBACK.");
+            // Fallback to Simulated
+            aiResponse = simulatedAiService.analyzeSentiment(transcript);
         }
+
+        // 3. Detect Sentiment
+        String sentiment = "NEUTRAL";
+        String lower = aiResponse.toLowerCase();
+        if (lower.contains("sad") || lower.contains("bad") || lower.contains("anxious") || lower.contains("depressed"))
+            sentiment = "DEPRESSIVE";
+        else if (lower.contains("happy") || lower.contains("good") || lower.contains("great"))
+            sentiment = "POSITIVE";
+
+        // 4. Save
+        VoiceSession session = VoiceSession.builder()
+                .patientId(patientId)
+                .userTranscript(transcript)
+                .aiResponse(aiResponse)
+                .sentimentDetected(sentiment)
+                .riskScore(sentiment.equals("DEPRESSIVE") ? 60 : 10)
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.ok(voiceSessionRepository.save(session));
     }
 
     private ResponseEntity<VoiceSession> createErrorSession(Long patientId, String errorMessage) {

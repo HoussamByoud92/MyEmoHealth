@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -46,6 +47,7 @@ public class DashboardController {
     }
 
     @GetMapping("/patient/me")
+    @Transactional(readOnly = true)
     public ResponseEntity<PatientDashboard> getPatientDashboard() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {

@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/api/doctors")
@@ -48,6 +49,7 @@ public class DoctorController {
     }
 
     @GetMapping("/patients")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<PatientProfile>> getAllPatients() {
         // Return all patients regardless of doctor assignment
         return ResponseEntity.ok(patientProfileRepository.findAll());

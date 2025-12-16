@@ -15,4 +15,8 @@ export class ChatService {
     getChatHistory(userId1: number, userId2: number): Observable<ChatMessage[]> {
         return this.http.get<ChatMessage[]>(`${this.apiUrl}/history/${userId1}/${userId2}`);
     }
+
+    sendMessage(message: ChatMessage): Observable<ChatMessage> {
+        return this.http.post<ChatMessage>(`${this.apiUrl}/send`, message);
+    }
 }

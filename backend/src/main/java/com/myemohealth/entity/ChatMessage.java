@@ -26,10 +26,14 @@ public class ChatMessage {
 
     private LocalDateTime timestamp;
 
-    private boolean read;
+    @Column(name = "is_read")
+    private boolean isRead;
 
     @PrePersist
     protected void onCreate() {
         timestamp = LocalDateTime.now();
+        if (!isRead) {
+            isRead = false;
+        }
     }
 }

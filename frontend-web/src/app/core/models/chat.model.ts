@@ -5,7 +5,7 @@ export interface ChatMessage {
     content: string;
     type: 'TEXT' | 'IMAGE' | 'VIDEO_CALL_START';
     timestamp?: string;
-    read?: boolean;
+    isRead?: boolean;
 }
 
 export interface VoiceSession {

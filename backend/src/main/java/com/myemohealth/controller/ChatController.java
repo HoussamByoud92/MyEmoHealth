@@ -29,12 +29,17 @@ public class ChatController {
         chatService.saveAndSend(message);
     }
 
-    // REST Endpoint: Send Message (for clients that can't use WebSocket)
     @PostMapping("/send")
     public ResponseEntity<ChatMessage> sendMessage(@RequestBody ChatMessage message) {
-        message.setTimestamp(LocalDateTime.now());
-        ChatMessage saved = chatService.saveAndSend(message);
-        return ResponseEntity.ok(saved);
+        try {
+            message.setTimestamp(LocalDateTime.now());
+            ChatMessage saved = chatService.saveAndSend(message);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            System.err.println("Error in sendMessage: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     // REST Endpoint: Get History
@@ -43,27 +48,35 @@ public class ChatController {
             @PathVariable Long userId1,
             @PathVariable Long userId2) {
 
-        // Security check: Current user must be one of the participants
-        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
-                .getContext().getAuthentication();
+        try {
+            // Security check: Current user must be one of the participants
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication();
 
-        String currentEmail = auth.getName();
+            String currentEmail = auth.getName();
 
-        // Allow participants and admins to view conversations
-        java.util.Optional<com.myemohealth.entity.User> currentUserOpt = userRepository.findByEmail(currentEmail);
-        boolean isParticipant = currentUserOpt
-                .map(u -> u.getId().equals(userId1) || u.getId().equals(userId2))
-                .orElse(false);
+            // Allow participants and admins to view conversations
+            java.util.Optional<com.myemohealth.entity.User> currentUserOpt = userRepository.findByEmail(currentEmail);
+            boolean isParticipant = currentUserOpt
+                    .map(u -> u.getId().equals(userId1) || u.getId().equals(userId2))
+                    .orElse(false);
 
-        boolean isAdmin = currentUserOpt
-                .map(u -> u.getRole() != null && "ADMIN".equals(u.getRole().getName()))
-                .orElse(false);
+            boolean isAdmin = currentUserOpt
+                    .map(u -> u.getRole() != null && "ADMIN".equals(u.getRole().getName()))
+                    .orElse(false);
 
-        if (!isParticipant && !isAdmin) {
-            return ResponseEntity.status(403).build();
+            if (!isParticipant && !isAdmin) {
+                return ResponseEntity.status(403).build();
+            }
+
+            return ResponseEntity.ok(chatService.getConversation(userId1, userId2));
+        } catch (Exception e) {
+            // Log the error and return empty list instead of 500
+            System.err.println(
+                    "Error fetching chat history for users " + userId1 + " and " + userId2 + ": " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.ok(java.util.Collections.emptyList());
         }
-
-        return ResponseEntity.ok(chatService.getConversation(userId1, userId2));
     }
 
     // REST Endpoint: Get all conversations for current user

@@ -1,0 +1,112 @@
+﻿The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+waiting for server to start....2025-12-15 22:06:42.023 UTC [41] LOG:  starting PostgreSQL 15.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2025-12-15 22:06:42.028 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2025-12-15 22:06:42.043 UTC [44] LOG:  database system was shut down at 2025-12-15 22:06:41 UTC
+2025-12-15 22:06:42.052 UTC [41] LOG:  database system is ready to accept connections
+ done
+server started
+CREATE DATABASE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/01-init-db.sql
+CREATE EXTENSION
+CREATE EXTENSION
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+COMMENT
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/02-seed-data.sql
+INSERT 0 3
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/03-base-qcms.sql
+2025-12-15 22:06:42.898 UTC [58] ERROR:  insert or update on table "qcm_template" violates foreign key constraint "qcm_template_creator_id_fkey"
+2025-12-15 22:06:42.898 UTC [58] DETAIL:  Key (creator_id)=(2) is not present in table "user".
+2025-12-15 22:06:42.898 UTC [58] STATEMENT:  INSERT INTO qcm_template (id, title, description, creator_id, category, difficulty_level, estimated_duration_minutes, is_active) VALUES
+	(1, '├ëvaluation ├ëmotionnelle Initiale', '├ëvaluation de base de l''├⌐tat ├⌐motionnel', 2, 'EMOTIONAL', 1, 10, TRUE),
+	(2, '├ëchelle d''Anxi├⌐t├⌐ GAD-7', 'Mesure du niveau d''anxi├⌐t├⌐ g├⌐n├⌐ralis├⌐e', 2, 'ANXIETY', 2, 10, TRUE),
+	(3, 'Inventaire de D├⌐pression de Beck', '├ëvaluation de la s├⌐v├⌐rit├⌐ de la d├⌐pression', 2, 'DEPRESSION', 2, 15, TRUE),
+	(4, 'Qualit├⌐ de Vie et Bien-├¬tre', 'Mesure de la satisfaction globale', 2, 'WELLBEING', 1, 12, TRUE),
+	(5, 'Gestion du Stress', '├ëvaluation des capacit├⌐s de gestion du stress', 2, 'STRESS', 2, 10, TRUE)
+	ON CONFLICT (id) DO NOTHING;

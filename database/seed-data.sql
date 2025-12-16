@@ -22,26 +22,26 @@ INSERT INTO phase (number, label, description, duration_days) VALUES
 (5, 'Phase de Consolidation', 'Consolidation et préparation à la sortie', 14);
 
 -- ============================================
--- USERS (Passwords are all: Password123!)
--- Password hash for "Password123!" using BCrypt
+-- USERS (Passwords are all: password)
+-- Plain text passwords (no hashing)
 -- ============================================
 
 -- Admin user
 INSERT INTO "user" (email, password_hash, first_name, last_name, role_id, enabled, email_verified) VALUES
-('admin@myemohealth.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Admin', 'System', 1, TRUE, TRUE);
+('admin@myemohealth.com', 'password', 'Admin', 'System', 1, TRUE, TRUE);
 
 -- Doctors
 INSERT INTO "user" (email, password_hash, first_name, last_name, role_id, enabled, email_verified) VALUES
-('dr.martin@myemohealth.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Sophie', 'Martin', 2, TRUE, TRUE),
-('dr.dubois@myemohealth.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Pierre', 'Dubois', 2, TRUE, TRUE);
+('dr.martin@myemohealth.com', 'password', 'Sophie', 'Martin', 2, TRUE, TRUE),
+('dr.dubois@myemohealth.com', 'password', 'Pierre', 'Dubois', 2, TRUE, TRUE);
 
 -- Patients
 INSERT INTO "user" (email, password_hash, first_name, last_name, role_id, enabled, email_verified) VALUES
-('patient1@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Marie', 'Lefebvre', 3, TRUE, TRUE),
-('patient2@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Jean', 'Moreau', 3, TRUE, TRUE),
-('patient3@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Claire', 'Bernard', 3, TRUE, TRUE),
-('patient4@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Luc', 'Petit', 3, TRUE, TRUE),
-('patient5@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Emma', 'Roux', 3, TRUE, TRUE);
+('patient1@test.com', 'password', 'Marie', 'Lefebvre', 3, TRUE, TRUE),
+('patient2@test.com', 'password', 'Jean', 'Moreau', 3, TRUE, TRUE),
+('patient3@test.com', 'password', 'Claire', 'Bernard', 3, TRUE, TRUE),
+('patient4@test.com', 'password', 'Luc', 'Petit', 3, TRUE, TRUE),
+('patient5@test.com', 'password', 'Emma', 'Roux', 3, TRUE, TRUE);
 
 -- ============================================
 -- DOCTOR PROFILES
@@ -77,18 +77,18 @@ INSERT INTO patient_phase_progress (patient_id, phase_id, status, started_at, te
 -- Patient 3 - Phase 1 completed, Phase 2 in progress
 INSERT INTO patient_phase_progress (patient_id, phase_id, status, started_at, completed_at, tests_completed, tests_passed) VALUES
 (6, 1, 'COMPLETED', CURRENT_TIMESTAMP - INTERVAL '20 days', CURRENT_TIMESTAMP - INTERVAL '13 days', 3, 3),
-(6, 2, 'IN_PROGRESS', CURRENT_TIMESTAMP - INTERVAL '13 days', 2, 2);
+(6, 2, 'IN_PROGRESS', CURRENT_TIMESTAMP - INTERVAL '13 days', NULL, 2, 2);
 
 -- Patient 4 - Phase 1 completed, Phase 2 in progress
 INSERT INTO patient_phase_progress (patient_id, phase_id, status, started_at, completed_at, tests_completed, tests_passed) VALUES
 (7, 1, 'COMPLETED', CURRENT_TIMESTAMP - INTERVAL '25 days', CURRENT_TIMESTAMP - INTERVAL '18 days', 3, 3),
-(7, 2, 'IN_PROGRESS', CURRENT_TIMESTAMP - INTERVAL '18 days', 1, 1);
+(7, 2, 'IN_PROGRESS', CURRENT_TIMESTAMP - INTERVAL '18 days', NULL, 1, 1);
 
 -- Patient 5 - Phases 1 & 2 completed, Phase 3 in progress
 INSERT INTO patient_phase_progress (patient_id, phase_id, status, started_at, completed_at, tests_completed, tests_passed) VALUES
 (8, 1, 'COMPLETED', CURRENT_TIMESTAMP - INTERVAL '60 days', CURRENT_TIMESTAMP - INTERVAL '53 days', 3, 3),
 (8, 2, 'COMPLETED', CURRENT_TIMESTAMP - INTERVAL '53 days', CURRENT_TIMESTAMP - INTERVAL '39 days', 3, 3),
-(8, 3, 'IN_PROGRESS', CURRENT_TIMESTAMP - INTERVAL '39 days', 2, 2);
+(8, 3, 'IN_PROGRESS', CURRENT_TIMESTAMP - INTERVAL '39 days', NULL, 2, 2);
 
 -- ============================================
 -- QCM TEMPLATES

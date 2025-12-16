@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/api/qcms")
@@ -23,6 +24,7 @@ public class QcmController {
     private final UserRepository userRepository;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<List<QcmTemplate>> getAllTemplates() {
         return ResponseEntity.ok(qcmTemplateRepository.findAll());
     }

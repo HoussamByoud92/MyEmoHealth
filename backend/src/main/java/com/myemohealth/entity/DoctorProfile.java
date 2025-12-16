@@ -5,6 +5,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Extended profile information for doctors
@@ -20,6 +21,7 @@ public class DoctorProfile {
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({ "patientProfile", "doctorProfile", "password", "passwordHash" })
     private User user;
 
     @Column(length = 100)
